@@ -81,6 +81,11 @@ PRODUCT_BOOT_JARS += tcmiface
 
 PRODUCT_PACKAGES += android.hardware.media.omx@1.0-impl
 
+# Fingerprint
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/fingerprint/android.hardware.biometrics.fingerprint@2.1-service.xiaomi_sdm845.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.biometrics.fingerprint@2.1-service.xiaomi_sdm845.rc
+
+
 #Audio configuration files
 -include $(TOPDIR)hardware/qcom/audio/configs/sdm845/sdm845.mk
 USE_CUSTOM_AUDIO_POLICY := 0
