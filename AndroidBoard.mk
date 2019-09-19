@@ -135,11 +135,9 @@ include device/qcom/wlan/skunk/AndroidBoardWlan.mk
 endif
 
 #----------------------------------------------------------------------
-# extra images
+# Configs common to AndroidBoard.mk for all targets
 #----------------------------------------------------------------------
-#ifeq (, $(wildcard vendor/qcom/build/tasks/generate_extra_images.mk))
-include device/qcom/common/generate_extra_images.mk
-#endif
+include vendor/qcom/opensource/core-utils/build/AndroidBoardCommon.mk
 
 #----------------------------------------------------------------------
 # override default make with prebuilt make path (if any)
