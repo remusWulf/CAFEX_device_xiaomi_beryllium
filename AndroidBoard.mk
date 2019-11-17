@@ -117,6 +117,8 @@ endif
 #Create dsp directory
 $(shell mkdir -p $(TARGET_OUT_VENDOR)/lib/dsp)
 
+include device/qcom/qssi/MergeConfig.mk
+
 #----------------------------------------------------------------------
 # Radio image
 #----------------------------------------------------------------------
