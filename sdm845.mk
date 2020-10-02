@@ -177,6 +177,10 @@ PRODUCT_PROPERTY_OVERRIDES  += \
 PRODUCT_PROPERTY_OVERRIDES += \
     vendor.qcom.bluetooth.soc=cherokee
 
+# Radio power saving
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.vendor.radio.add_power_save=1
+
 PRODUCT_FULL_TREBLE_OVERRIDE := true
 PRODUCT_VENDOR_MOVE_ENABLED := true
 
