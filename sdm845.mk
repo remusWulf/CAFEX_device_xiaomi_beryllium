@@ -279,6 +279,10 @@ BT := com.qualcomm.qti.bluetooth_audio@1.0-impl
 BT += com.qualcomm.qti.bluetooth_audio@1.0
 endif
 
+#vendor prop to disable advanced network scanning
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.vendor.radio.enableadvancedscan=false
+
 ###################################################################################
 # This is the End of target.mk file.
 # Now, Pickup other split product.mk files:
