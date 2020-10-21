@@ -1,5 +1,4 @@
 # Default A/B configuration.
-ENABLE_AB ?= true
 # By default this target is OTA config, so set the default shipping
 # level to 28 (if not set explicitly earlier)
 SHIPPING_API_LEVEL ?= 28
@@ -20,50 +19,12 @@ PRODUCT_BUILD_VENDOR_IMAGE := true
 PRODUCT_BUILD_PRODUCT_IMAGE := false
 PRODUCT_BUILD_PRODUCT_SERVICES_IMAGE := false
 PRODUCT_BUILD_ODM_IMAGE := false
-ifeq ($(ENABLE_AB), true)
 PRODUCT_BUILD_CACHE_IMAGE := false
-else
-PRODUCT_BUILD_CACHE_IMAGE := true
-endif
 PRODUCT_BUILD_RAMDISK_IMAGE := true
 PRODUCT_BUILD_USERDATA_IMAGE := true
 
-# Also, since we're going to skip building the system image, we also skip
-# building the OTA package. We'll build this at a later step. We also don't
-# need to build the OTA tools package (we'll use the one from the system build).
-TARGET_SKIP_OTA_PACKAGE := true
-TARGET_SKIP_OTATOOLS_PACKAGE := true
-
-
-ifneq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
-# Enable chain partition for system, to facilitate system-only OTA in Treble.
-BOARD_AVB_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
-BOARD_AVB_SYSTEM_ALGORITHM := SHA256_RSA2048
-BOARD_AVB_SYSTEM_ROLLBACK_INDEX := 0
-BOARD_AVB_SYSTEM_ROLLBACK_INDEX_LOCATION := 2
-else
-PRODUCT_USE_DYNAMIC_PARTITIONS := true
-PRODUCT_PACKAGES += fastbootd
-# Add default implementation of fastboot HAL.
-PRODUCT_PACKAGES += android.hardware.fastboot@1.0-impl-mock
-ifeq ($(ENABLE_AB), true)
-PRODUCT_COPY_FILES += $(LOCAL_PATH)/fstab_AB_dynamic_partition.qti:$(TARGET_COPY_OUT_RAMDISK)/fstab.qcom
-else
-PRODUCT_COPY_FILES += $(LOCAL_PATH)/fstab_non_AB_dynamic_partition.qti:$(TARGET_COPY_OUT_RAMDISK)/fstab.qcom
-endif
-BOARD_AVB_VBMETA_SYSTEM := system
-BOARD_AVB_VBMETA_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
-BOARD_AVB_VBMETA_SYSTEM_ALGORITHM := SHA256_RSA2048
-BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
-BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX_LOCATION := 2
-$(call inherit-product, build/make/target/product/gsi_keys.mk)
-endif
-
-# Enable AVB 2.0
-BOARD_AVB_ENABLE := true
-
 # privapp-permissions whitelisting
-PRODUCT_PROPERTY_OVERRIDES += ro.control_privapp_permissions=enforce
+PRODUCT_PROPERTY_OVERRIDES += ro.control_privapp_permissions=log
 
 TARGET_DEFINES_DALVIK_HEAP := true
 TARGET_ENABLE_QC_AV_ENHANCEMENTS := true
@@ -129,30 +90,6 @@ USE_LIB_PROCESS_GROUP := true
 
 PRODUCT_PACKAGES += fs_config_files
 
-ifeq ($(ENABLE_AB), true)
-#A/B related packages
-PRODUCT_PACKAGES += update_engine \
-    update_engine_client \
-    update_verifier \
-    bootctrl.sdm845 \
-    android.hardware.boot@1.0-impl \
-    android.hardware.boot@1.0-service
-
-PRODUCT_HOST_PACKAGES += \
-    brillo_update_payload
-
-#Boot control HAL test app
-PRODUCT_PACKAGES_DEBUG += bootctl
-
-PRODUCT_STATIC_BOOT_CONTROL_HAL := \
-    bootctrl.sdm845 \
-    librecovery_updater_msm \
-    libz \
-    libcutils
-
-PRODUCT_PACKAGES += \
-    update_engine_sideload
-endif
 
 DEVICE_MANIFEST_FILE := device/qcom/sdm845/manifest.xml
 ifeq ($(ENABLE_AB), true)
@@ -204,10 +141,6 @@ PRODUCT_COPY_FILES += \
 # High performance VR feature
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.vr.high_performance.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.vr.high_performance.xml
-
-# Kernel modules install path
-KERNEL_MODULES_INSTALL := dlkm
-KERNEL_MODULES_OUT := out/target/product/$(PRODUCT_NAME)/$(KERNEL_MODULES_INSTALL)/lib/modules
 
 #FEATURE_OPENGLES_EXTENSION_PACK support string config file
 PRODUCT_COPY_FILES += \

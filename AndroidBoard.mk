@@ -15,52 +15,6 @@ $(BUILT_TARGET_FILES_PACKAGE): $(INSTALLED_BOOTLOADER_MODULE)
 droidcore: $(INSTALLED_BOOTLOADER_MODULE)
 endif
 
-#----------------------------------------------------------------------
-# Compile Linux Kernel
-#----------------------------------------------------------------------
-ifeq ($(KERNEL_DEFCONFIG),)
-   ifeq ($(TARGET_BUILD_VARIANT),user)
-     KERNEL_DEFCONFIG := sdm845-perf_defconfig
-   else
-     KERNEL_DEFCONFIG := sdm845_defconfig
-   endif
-endif
-
-ifeq ($(TARGET_KERNEL_SOURCE),)
-     TARGET_KERNEL_SOURCE := kernel
-endif
-
-DTC := $(HOST_OUT_EXECUTABLES)/dtc$(HOST_EXECUTABLE_SUFFIX)
-UFDT_APPLY_OVERLAY := $(HOST_OUT_EXECUTABLES)/ufdt_apply_overlay$(HOST_EXECUTABLE_SUFFIX)
-
-# ../../ prepended to paths because kernel is at ./kernel/msm-x.x
-TEMP_TOP=$(shell pwd)
-TARGET_KERNEL_MAKE_ENV := DTC_EXT=$(TEMP_TOP)/$(DTC)
-TARGET_KERNEL_MAKE_ENV += DTC_OVERLAY_TEST_EXT=$(TEMP_TOP)/$(UFDT_APPLY_OVERLAY)
-TARGET_KERNEL_MAKE_ENV += CONFIG_BUILD_ARM64_DT_OVERLAY=y
-TARGET_KERNEL_MAKE_ENV += HOSTCC=$(TEMP_TOP)/prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.17-4.8/bin/x86_64-linux-gcc
-TARGET_KERNEL_MAKE_ENV += HOSTAR=$(TEMP_TOP)/prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.17-4.8/bin/x86_64-linux-ar
-TARGET_KERNEL_MAKE_ENV += HOSTLD=$(TEMP_TOP)/prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.17-4.8/bin/x86_64-linux-ld
-TARGET_KERNEL_MAKE_ENV += HOSTCFLAGS="-I/usr/include -I/usr/include/x86_64-linux-gnu -L/usr/lib -L/usr/lib/x86_64-linux-gnu"
-TARGET_KERNEL_MAKE_ENV += HOSTLDFLAGS="-L/usr/lib -L/usr/lib/x86_64-linux-gnu"
-
-include $(TARGET_KERNEL_SOURCE)/AndroidKernel.mk
-
-# Append or enable camx2.1 KMD driver
-ifneq ("$(wildcard $(QCPATH)/chi-cdk/vendor/camx-component.mk)","")
-   include $(QCPATH)/chi-cdk/vendor/camx-component.mk
-   ifeq ($(KERNEL_ARCH),arm64)
-      ifeq ($(CAMX_COMPONENT_2.1), true)
-         KERNEL_CONFIG_OVERRIDE := CONFIG_SPECTRA2_CAMERA=y
-         KERNEL_CONFIG_OVERRIDE += CONFIG_SPECTRA2_CAMERA_DEBUG=y
-      endif
-   endif
-endif
-
-$(TARGET_PREBUILT_KERNEL): $(DTC) $(UFDT_APPLY_OVERLAY)
-
-$(INSTALLED_KERNEL_TARGET): $(TARGET_PREBUILT_KERNEL) | $(ACP)
-	$(transform-prebuilt-to-target)
 
 #----------------------------------------------------------------------
 # Copy additional target-specific files
