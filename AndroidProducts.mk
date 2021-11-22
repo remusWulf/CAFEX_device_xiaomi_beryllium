@@ -14,9 +14,9 @@
 # limitations under the License.
 
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/cafex_beryllium.mk
+    $(LOCAL_DIR)/p404_beryllium.mk
 
 COMMON_LUNCH_CHOICES := \
-    cafex_beryllium-user \
-    cafex_beryllium-userdebug \
-    cafex_beryllium-eng
+    p404_beryllium-user \
+    p404_beryllium-userdebug \
+    p404_beryllium-eng
